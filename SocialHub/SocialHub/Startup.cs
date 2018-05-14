@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SocialHub.Infrastructure.Data;
 using SocialHub.Infrastructure.IdentityData;
 
 namespace SocialHub
@@ -34,6 +35,11 @@ namespace SocialHub
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityAppDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddDbContext<AppDbContext>(option =>
+            {
+                option.UseSqlServer(Configuration.GetConnectionString("AppConnection"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
