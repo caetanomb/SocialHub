@@ -11,9 +11,10 @@ namespace SocialHub.Core.Entities
         public int GenreId { get; set; }
         public Genre Genre { get; set; }
 
-        protected Gig(string artistId)
+        protected Gig(string artistId, int genreId)
         {
             ArtistId = artistId;
+            GenreId = genreId;
         }
     }
 }
