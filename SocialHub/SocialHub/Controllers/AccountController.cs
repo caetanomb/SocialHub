@@ -11,6 +11,7 @@ using SocialHub.Models;
 
 namespace SocialHub.Controllers
 {    
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -26,7 +27,8 @@ namespace SocialHub.Controllers
             _emailService = emailService;
         }
 
-        public async Task<IActionResult> Login()
+        [AllowAnonymous]
+        public IActionResult Login()
         {
             return View();
         }
@@ -37,7 +39,7 @@ namespace SocialHub.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             if (!ModelState.IsValid)            
-                return View(model);            
+                return View(model);                        
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
 
@@ -56,16 +58,24 @@ namespace SocialHub.Controllers
             }
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register()
+        {            
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
-
             if (!ModelState.IsValid)
                 return View(model);
 
             var applicationUser = new ApplicationUser() {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                UserName = model.Email,
+                UserName = model.UserName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber
             };
@@ -85,9 +95,46 @@ namespace SocialHub.Controllers
                 var userSignIn = _signInManager.SignInAsync(applicationUser, false);
                 //Log info
                 return RedirectToLocal(returnUrl);
-            }
+            }            
+
+            AddIdentityErros(resultUserCreation.Errors);
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            //Log a info message to inform the signout
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (User == null || code == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
+        private void AddIdentityErros(IEnumerable<IdentityError> errors)
+        {
+            foreach (IdentityError identityError in errors)
+            {
+                ModelState.AddModelError(identityError.Code, identityError.Description);
+            }
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
