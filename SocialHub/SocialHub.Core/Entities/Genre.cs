@@ -10,6 +10,11 @@ namespace SocialHub.Core.Entities
         public string Name { get; private set; }
         public virtual ICollection<Gig> Gigs { get; set; }
 
+        private Genre()
+        {
+
+        }
+
         public Genre(string name)
         {
             Name = name;

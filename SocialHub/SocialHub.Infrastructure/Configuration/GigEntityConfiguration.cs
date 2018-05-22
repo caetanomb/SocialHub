@@ -17,7 +17,7 @@ namespace SocialHub.Infrastructure.Configuration
                 .HasMaxLength(450)                
                 .IsRequired();
 
-            builder.Property(a => a.Datetime)
+            builder.Property(a => a.DateTime)
                 .IsRequired();
 
             builder.HasOne(a => a.Genre).WithMany(b => b.Gigs);                

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SocialHub.ApplicationServices\SocialHub.ApplicationServices.csproj" />
     <ProjectReference Include="..\SocialHub.Infrastructure\SocialHub.Infrastructure.csproj" />
   </ItemGroup>
 
