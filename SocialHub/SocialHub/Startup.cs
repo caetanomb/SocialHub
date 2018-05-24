@@ -80,6 +80,8 @@ namespace SocialHub
                 opt.SlidingExpiration = true;
             });
 
+            services.AddMemoryCache();
+
             services.AddMvc();
         }
 
